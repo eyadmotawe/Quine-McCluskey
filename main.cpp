@@ -71,10 +71,10 @@ int main() {
     int t = 1;
     //cin >> t;
     while (t--) {
-        cout<<"Enter number of variables: ";
+        cout<<"\nEnter number of variables: ";
         int varN;
         cin >> varN;
-        cout<<"Enter number of minterms: ";
+        cout<<"\nEnter number of minterms: ";
         int mintermsN;
         cin >> mintermsN;
         int groubs = varN;
@@ -86,7 +86,14 @@ int main() {
             minterms.emplace_back(c);
             firstTable.at(countOnes(c)).emplace_back(toBinary(c, groubs));
         }
-
+        cout<<"\nEnter number of don't cares : ";
+        int dc = 0;
+        cin >> dc;
+        cout<<"\nEnter don't cares: ";
+        for(int i = 0; i < dc; i++) {
+            cin >> c;
+            firstTable.at(countOnes(c)).emplace_back(toBinary(c, groubs));
+        }
         //build second table
         vector<vector<string>> secondTable(groubs);
         set<string> clickFirstTable;
