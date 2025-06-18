@@ -162,12 +162,12 @@ int main() {
                 }
             }
         }
-        cout<<"\n\n\n";
+        cout<<"\n\n\nprime implicants"<< "( " << PI.size() <<" ): \n";
         for(auto &i: PI)
         {
             cout<<binaryToBoolean(i)<<'\n';
         }
-        cout<<PI.size();
+
        // Build PI chart
         map<string, vector<int>> piChart; // PI -> list of minterms it covers
         map<int, vector<string>> mintermToPI; // Minterm -> list of PIs that cover it
@@ -180,6 +180,7 @@ int main() {
             }
         }
         set<string>epi;
+
         //find essential prime implicants
         for (auto it = mintermToPI.begin(); it != mintermToPI.end(); )
         {
@@ -193,6 +194,11 @@ int main() {
             {
                 ++it;
             }
+        }
+        cout<<"\n\n\nessential prime implicants"<< "( " << epi.size() <<" ): \n";
+        for(auto &i: epi)
+        {
+            cout<<binaryToBoolean(i)<<'\n';
         }
         //delete minterms covered by epi
         set<int>coverd;
@@ -213,6 +219,7 @@ int main() {
             if(!flag)
                 it++;
         }
+
         //delete covered mintermes from pichart
         for(auto &p : piChart)
         {
@@ -226,6 +233,7 @@ int main() {
             }
             
         }
+        // find the optimal PI that covers the most minterms.
         while(mintermToPI.size())
         {
             int mx = 0;
@@ -245,6 +253,7 @@ int main() {
             {
                 mintermToPI.erase(i);
             }
+
             piChart.erase(target);
         }
         cout<<"\nminimized function: \n";
