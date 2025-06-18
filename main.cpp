@@ -71,12 +71,14 @@ int main() {
     int t = 1;
     //cin >> t;
     while (t--) {
-        cout<<"\nEnter number of variables: ";
+        cout<<"Enter number of variables:";
         int varN;
         cin >> varN;
         cout<<"\nEnter number of minterms: ";
         int mintermsN;
         cin >> mintermsN;
+        cout<<"\nEnter minterms : ";
+
         int groubs = varN;
         vector<vector<string>> firstTable(groubs + 1);
         int c;
@@ -164,6 +166,94 @@ int main() {
         for(auto &i: PI)
         {
             cout<<binaryToBoolean(i)<<'\n';
+        }
+        cout<<PI.size();
+       // Build PI chart
+        map<string, vector<int>> piChart; // PI -> list of minterms it covers
+        map<int, vector<string>> mintermToPI; // Minterm -> list of PIs that cover it
+        for (auto& pi : PI) {
+            for (int m : minterms) {
+                if (canCover(pi, m)) {
+                    piChart[pi].push_back(m);
+                    mintermToPI[m].push_back(pi);
+                }
+            }
+        }
+        set<string>epi;
+        //find essential prime implicants
+        for (auto it = mintermToPI.begin(); it != mintermToPI.end(); )
+        {
+            if (it->second.size() == 1)
+            {
+                epi.emplace(it->second[0]);
+                piChart.erase(it->second[0]);
+                it = mintermToPI.erase(it);  // returns iterator to next element
+            }
+            else
+            {
+                ++it;
+            }
+        }
+        //delete minterms covered by epi
+        set<int>coverd;
+        for (auto it = mintermToPI.begin(); it != mintermToPI.end(); )
+        {
+            int flag = 0;
+            for(auto &e : epi)
+                {
+                if(it == mintermToPI.end()) break;
+                if(count(it->second.begin(), it->second.end(), e))
+                {
+                    coverd.emplace(it->first);
+                    it = mintermToPI.erase(it);
+                    flag = 1;
+                    break;
+                }
+            }
+            if(!flag)
+                it++;
+        }
+        //delete covered mintermes from pichart
+        for(auto &p : piChart)
+        {
+            for(int i = 0; i < p.second.size(); i++)
+            {
+                if(coverd.count(p.second[i]))
+                {
+                    p.second.erase(p.second.begin() + i);
+                    i--;
+                }
+            }
+            
+        }
+        while(mintermToPI.size())
+        {
+            int mx = 0;
+            map<std::string, std::vector<int>>::iterator target;
+            for (auto it = piChart.begin(); it != piChart.end(); )
+            {
+                if(it->second.size() >= mx)
+                {
+                    mx = it->second.size();
+                    target = it;
+                }
+                it++;
+            }
+            epi.emplace(target->first);
+
+            for(auto &i: target->second)
+            {
+                mintermToPI.erase(i);
+            }
+            piChart.erase(target);
+        }
+        cout<<"\nminimized function: \n";
+        c = 0;
+        for(auto &i : epi)
+        {
+            c++;
+            cout<<binaryToBoolean(i);
+            if(c != epi.size()) cout<<" + ";
         }
     }
     return 0;
